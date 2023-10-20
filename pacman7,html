@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pacman Game</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      canvas {
+        background-color: black;
+        display: block;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const pacSize = 30;
+      let pacX = canvas.width / 2;
+      let pacY = canvas.height / 2;
+      let pacSpeed = 2;
+      let pacDirection = 0; // 0: right, 1: down, 2: left, 3: up
+
+      const dotSize = 5;
+      const dots = [
+        { x: 50, y: 50 },
+        { x: 150, y: 50 },
+        { x: 250, y: 50 },
+        // Add more dots here
+      ];
+
+      function drawPacman() {
+        ctx.beginPath();
+        ctx.arc(pacX, pacY, pacSize, 0.2 * Math.PI * pacDirection, 1.8 * Math.PI * pacDirection);
+        ctx.lineTo(pacX, pacY);
+        ctx.fillStyle = 'yellow';
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      function drawDot(dot) {
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dotSize, 0, 2 * Math.PI);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      function drawDots() {
+        dots.forEach(drawDot);
+      }
+
+      function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      function updateGameArea() {
+        clearCanvas();
+        drawDots();
+        drawPacman();
+
+        if (pacDirection === 0) {
+          pacX += pacSpeed;
+        } else if (pacDirection === 1) {
+          pacY += pacSpeed;
+        } else if (pacDirection === 2) {
+          pacX -= pacSpeed;
+        } else if (pacDirection === 3) {
+          pacY -= pacSpeed;
+        }
+
+        // Check for collision with dots
+        for (let i = 0; i < dots.length; i++) {
+          const dot = dots[i];
+          const distance = Math.sqrt(Math.pow(pacX - dot.x, 2) + Math.pow(pacY - dot.y, 2));
+          if (distance < pacSize + dotSize) {
+            dots.splice(i, 1);
+          }
+        }
+
+        requestAnimationFrame(updateGameArea);
+      }
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowRight') {
+          pacDirection = 0;
+        } else if (event.key === 'ArrowDown') {
+          pacDirection = 1;
+        } else if (event.key === 'ArrowLeft') {
+          pacDirection = 2;
+        } else if (event.key === 'ArrowUp') {
+          pacDirection = 3;
+        }
+      });
+
+      updateGameArea();
+    </script>
+  </body>
+</html>
